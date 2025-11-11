@@ -24,7 +24,7 @@ export default function StudentsPage() {
   const [form] = Form.useForm();
   const router = useRouter();
 
-  // ✅ Fetch students from your API
+  // ✅ Fetch students
   const fetchStudents = async () => {
     setLoading(true);
     try {
@@ -42,62 +42,45 @@ export default function StudentsPage() {
     fetchStudents();
   }, []);
 
-  // ✅ Add / Edit student (local simulation if API fails)
-  const handleSubmit = async () => {
-    try {
-      const values = await form.validateFields();
-
-      if (editingStudent) {
-        // Update
-        try {
-          await axios.put(API_URL, { id: editingStudent.id, ...values });
-          message.success("Student updated successfully");
-        } catch {
-          // fallback local update
-          setStudents((prev) =>
-            prev.map((s) =>
-              s.id === editingStudent.id ? { ...s, ...values } : s
-            )
-          );
-          message.warning("Remote API update failed — updated locally.");
-        }
-      } else {
-        // Add new
-        try {
-          await axios.post(API_URL, values);
-          message.success("Student added successfully");
-        } catch {
-          const newId = Math.max(...students.map((s) => s.id), 0) + 1;
-          setStudents((prev) => [...prev, { id: newId, ...values }]);
-          message.warning("Remote API add failed — added locally.");
-        }
-      }
-
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error(error);
-      message.error("Failed to save student");
-    }
-  };
-
-  // ✅ Delete student (local simulation fallback)
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(API_URL, { data: { id } });
-      message.success("Student deleted successfully");
-      fetchStudents();
-    } catch {
-      // fallback local delete
-      setStudents((prev) => prev.filter((s) => s.id !== id));
-      message.warning("Remote API delete failed — deleted locally.");
-    }
-  };
-
+  // ✅ Open modal for add/edit
   const openModal = (student = null) => {
     setEditingStudent(student);
     form.resetFields();
     if (student) form.setFieldsValue(student);
     setIsModalOpen(true);
+  };
+
+  // ✅ Add or Update
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+      if (editingStudent) {
+        // Update
+        await axios.put(API_URL, { id: editingStudent.id, ...values });
+        message.success("Student updated successfully");
+      } else {
+        // Add
+        await axios.post(API_URL, values);
+        message.success("Student added successfully");
+      }
+      setIsModalOpen(false);
+      fetchStudents();
+    } catch (error) {
+      console.error("Save Error:", error);
+      message.error("Failed to save student");
+    }
+  };
+
+  // ✅ Delete
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(API_URL, { data: { id } });
+      message.success("Student deleted successfully");
+      fetchStudents();
+    } catch (error) {
+      console.error("Delete Error:", error);
+      message.error("Failed to delete student");
+    }
   };
 
   const columns = [
@@ -108,7 +91,7 @@ export default function StudentsPage() {
     { title: "Major", dataIndex: "major" },
     { title: "Status", dataIndex: "status" },
     {
-      title: "Actions",
+      title: "Action",
       render: (_, record) => (
         <>
           <Button type="link" onClick={() => openModal(record)}>
@@ -159,6 +142,7 @@ export default function StudentsPage() {
         pagination={{ pageSize: 6 }}
       />
 
+      {/* ✅ Modal for Add/Edit */}
       <Modal
         title={editingStudent ? "Edit Student" : "Add Student"}
         open={isModalOpen}
