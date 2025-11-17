@@ -24,7 +24,7 @@ export default function StudentsPage() {
   const [form] = Form.useForm();
   const router = useRouter();
 
-  // ✅ Fetch students from your API
+ 
   const fetchStudents = async () => {
     setLoading(true);
     try {
@@ -42,18 +42,18 @@ export default function StudentsPage() {
     fetchStudents();
   }, []);
 
-  // ✅ Add / Edit student (local simulation if API fails)
+  
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
 
       if (editingStudent) {
-        // Update
+      
         try {
           await axios.put(API_URL, { id: editingStudent.id, ...values });
           message.success("Student updated successfully");
         } catch {
-          // fallback local update
+         
           setStudents((prev) =>
             prev.map((s) =>
               s.id === editingStudent.id ? { ...s, ...values } : s
@@ -62,7 +62,7 @@ export default function StudentsPage() {
           message.warning("Remote API update failed — updated locally.");
         }
       } else {
-        // Add new
+       
         try {
           await axios.post(API_URL, values);
           message.success("Student added successfully");
@@ -80,14 +80,14 @@ export default function StudentsPage() {
     }
   };
 
-  // ✅ Delete student (local simulation fallback)
+  
   const handleDelete = async (id) => {
     try {
       await axios.delete(API_URL, { data: { id } });
       message.success("Student deleted successfully");
       fetchStudents();
     } catch {
-      // fallback local delete
+      
       setStudents((prev) => prev.filter((s) => s.id !== id));
       message.warning("Remote API delete failed — deleted locally.");
     }

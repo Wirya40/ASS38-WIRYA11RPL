@@ -12,7 +12,7 @@ export default function StudentDetail({ params }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // ✅ Must unwrap params since it's a Promise
+  
   const [id, setId] = useState(null);
   useEffect(() => {
     Promise.resolve(params).then((p) => setId(p.id));

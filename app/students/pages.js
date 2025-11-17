@@ -24,7 +24,7 @@ export default function StudentsPage() {
   const [form] = Form.useForm();
   const router = useRouter();
 
-  // ✅ Fetch students
+  
   const fetchStudents = async () => {
     setLoading(true);
     try {
@@ -42,7 +42,7 @@ export default function StudentsPage() {
     fetchStudents();
   }, []);
 
-  // ✅ Open modal for add/edit
+  
   const openModal = (student = null) => {
     setEditingStudent(student);
     form.resetFields();
@@ -50,16 +50,16 @@ export default function StudentsPage() {
     setIsModalOpen(true);
   };
 
-  // ✅ Add or Update
+  
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
       if (editingStudent) {
-        // Update
+       
         await axios.put(API_URL, { id: editingStudent.id, ...values });
         message.success("Student updated successfully");
       } else {
-        // Add
+       
         await axios.post(API_URL, values);
         message.success("Student added successfully");
       }
@@ -71,7 +71,7 @@ export default function StudentsPage() {
     }
   };
 
-  // ✅ Delete
+  
   const handleDelete = async (id) => {
     try {
       await axios.delete(API_URL, { data: { id } });
@@ -142,7 +142,7 @@ export default function StudentsPage() {
         pagination={{ pageSize: 6 }}
       />
 
-      {/* ✅ Modal for Add/Edit */}
+      
       <Modal
         title={editingStudent ? "Edit Student" : "Add Student"}
         open={isModalOpen}

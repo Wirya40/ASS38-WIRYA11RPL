@@ -7,7 +7,7 @@ export async function GET() {
     const res = await fetch(API_URL, { cache: "no-store" });
     const data = await res.json();
 
-    // The real API wraps data inside "body.data"
+   
     return NextResponse.json(data.body.data || []);
   } catch (error) {
     console.error("Fetch error:", error);
@@ -31,7 +31,7 @@ export async function POST(req) {
   }
 }
 
-// ✅ PUT (Update student)
+
 export async function PUT(req) {
   try {
     const data = await req.json();
@@ -51,7 +51,7 @@ export async function PUT(req) {
   }
 }
 
-// ✅ DELETE (Delete student)
+
 export async function DELETE(req) {
   try {
     const { id } = await req.json();
